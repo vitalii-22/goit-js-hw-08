@@ -73,9 +73,9 @@ function createGallery(arr) {
      <a class="gallery-link" href=${original}>
     <img
       class="gallery-image"
-      src=${preview}
-      data-source=${original}
-      alt=${description}
+      src="${preview}"
+      data-source="${original}"
+      alt="${description}"
     />
   </a>
 </li>`
@@ -88,7 +88,7 @@ gallery.innerHTML = createGallery(images);
 gallery.addEventListener("click", handleClick);
 
 function handleClick(event) {
-  if (event.target === event.currentTarget) {
+  if (event.target.nodeName !== "IMG") {
     return;
   }
   event.preventDefault();
@@ -96,13 +96,16 @@ function handleClick(event) {
   const description = event.target.alt;
 
   const instance = basicLightbox.create(`
-    <img src=${originalImages} alt=${description}>
+    <img src="${originalImages}" alt="${description}">
 `);
   instance.show();
 
-  document.addEventListener("keydown", (evt) => {
-    if (evt.code === "Escape") {
+  const closeModal = (event) => {
+    if (event.code === "Escape") {
       instance.close();
+      document.removeEventListener("keydown", closeModal);
     }
-  });
+  };
+
+  document.addEventListener("keydown", closeModal);
 }
