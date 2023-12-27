@@ -70,7 +70,7 @@ function createGallery(arr) {
   return arr
     .map(
       ({ preview, original, description }) => `<li class="gallery-item">
-     <a class="gallery-link" href=${original}>
+     <a class="gallery-link" href="${original}">
     <img
       class="gallery-image"
       src="${preview}"
@@ -95,17 +95,25 @@ function handleClick(event) {
   const originalImages = event.target.dataset.source;
   const description = event.target.alt;
 
-  const instance = basicLightbox.create(`
+  const instance = basicLightbox.create(
+    `
     <img src="${originalImages}" alt="${description}">
-`);
-  instance.show();
+`,
+    {
+      onShow: (instance) => {
+        document.addEventListener("keydown", closeModal);
+      },
+      onClose: (instance) => {
+        document.removeEventListener("keydown", closeModal);
+      },
+    }
+  );
 
-  const closeModal = (event) => {
+  function closeModal(event) {
     if (event.code === "Escape") {
       instance.close();
-      document.removeEventListener("keydown", closeModal);
     }
-  };
+  }
 
-  document.addEventListener("keydown", closeModal);
+  instance.show();
 }
